@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../assets/styleLogin.css";
+
 
 const PageLogin = () => {
   //Funcão Naviagte para navegar entre as paginas por meio JS
@@ -19,6 +19,8 @@ const PageLogin = () => {
   //Const de State para área de login:
   const [inputId, setInputId] = useState("");
   const [inputSenha, setInputSenha] = useState("");
+
+
 
   //Handle de dados e validação de usuários
   const handleLogin = (event) => {
