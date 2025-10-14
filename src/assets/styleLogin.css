@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+body {
+  margin: 0;
+  display: flex;
+  /* Opcional a retirada  */
+  /* place-items: center; */
+  /* -----------------    */
+  min-width: 320px;
+  min-height: 100vh;
+  color: 333333;
+}
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 500;
+  background-color: #e8edf2;
+}
+#root {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+button {
+  border-radius: 10px;
+  border: none;
+}
+
+/* Página */
+.bodyLogin {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  place-items: center;
+}
+.cardLogin {
+  background-color: #f7f9fb;
+  width: 70%;
+  min-width: 750px;
+  margin: 0 auto;
+  display: flex;
+  border-radius: 40px;
+  align-items: center;
+  text-align: center;
+}
+.cardLogin img {
+  width: 50%;
+  border-radius: 40px 0px 0px 40px;
+}
+.formLogin {
+  width: 50%;
+}
+.formLogin img {
+  width: 60%;
+  margin: 50px auto;
+}
+.inputCard {
+  width: 70%;
+  border: none;
+  background-color: #e8edf2;
+  height: 50px;
+  margin: 5px 0px;
+  border-radius: 10px;
+  font-size: 15px;
+  padding-left: 10px;
+  font-weight: 500;
+}
+
+.btnSubmit {
+  margin: 50px auto;
+  width: 70%;
+  height: 50px;
+  cursor: pointer;
+  background-color: #639a88;
+  color: white;
+}
