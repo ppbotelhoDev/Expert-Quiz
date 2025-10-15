@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const PageLogin = () => {
   //Funcão Naviagte para navegar entre as paginas por meio JS
   const navigate = useNavigate();
@@ -20,8 +19,6 @@ const PageLogin = () => {
   const [inputId, setInputId] = useState("");
   const [inputSenha, setInputSenha] = useState("");
 
-
-
   //Handle de dados e validação de usuários
   const handleLogin = (event) => {
     //Evita o reinicio da página
@@ -36,9 +33,11 @@ const PageLogin = () => {
       //Se sim ele valida se é Aluno ou Professor
       if (findUser.isTeacher) {
         //Se for professor ele navega ao dashboard do professor
+        
         navigate("/DashboardProfessor", { state: { user: findUser } });
       } else {
         //Se não ele navega até o dashboard do aluno
+        
         navigate("/DashboardAluno", { state: { user: findUser } });
       }
       //Caso nao seja encontrado tratamos aqui!
@@ -48,7 +47,7 @@ const PageLogin = () => {
   };
 
   return (
-    <div className="bodyLogin">
+    <div className="bodyLogin main-content">
       <div className="cardLogin">
         <img src="imgLogin.png" alt="" />
         <form onSubmit={handleLogin} className="formLogin" action="">
