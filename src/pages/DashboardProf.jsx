@@ -40,13 +40,13 @@ const DashboardProf = () => {
                 Home
               </Link>
               <Link to={"/"} className="linkNav" onClick={() => navigate("./")}>
-                Dashboard
-              </Link>
-              <Link to={"/"} className="linkNav" onClick={() => navigate("./")}>
                 Notas
               </Link>
-              <Link to={"/"} className="linkNav" onClick={() => navigate("/")}>
+              <Link to={"/"} className="linkNav" onClick={() => navigate("./")}>
                 Cadastrar
+              </Link>
+              <Link to={"/"} className="linkNav" onClick={() => navigate("/")}>
+                Perfil
               </Link>
             </div>
             <div className="itensUser">
