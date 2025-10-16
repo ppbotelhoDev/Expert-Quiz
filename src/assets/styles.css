@@ -367,11 +367,12 @@ footer {
 }
 .questions {
   text-align: left;
-  margin: 40px 0px;
+  margin: 0px 0px;
 }
 .input-questions {
   display: flex;
   justify-content: space-between;
+  margin: 35px 0px 0px 0px;
 }
 .title-questions {
   color: #136b4e;
@@ -389,15 +390,17 @@ footer {
 .input-answers {
   display: flex;
   justify-content: space-between;
-  margin: 20px 0px;
+  margin: 20px 0px 0px 0px;
 }
 .title-alt {
   width: 18%;
+  font-weight: 500;
 }
 .alt-anwsers {
   width: 80%;
   border: 1px solid #afc5be;
   border-radius: 20px;
+  padding: 0px 15px;
 }
 
 .gabarito {
@@ -420,7 +423,6 @@ footer {
 .select-gab {
   border-radius: 10px;
   color: #333333;
-  border: 2px solid #333333;
   font-weight: 600;
 }
 .enviarFormQuiz{
@@ -434,4 +436,9 @@ footer {
   width: 15%;
   background-color: #136b4e;
   color: white;
+}
+hr{
+  opacity: 40%;
+  width: 95%;
+  margin: 20px auto;
 }

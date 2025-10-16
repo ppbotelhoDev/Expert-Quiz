@@ -1,13 +1,17 @@
+//import { useState } from "react";
 import { useLocation, /* useNavigate ,*/ Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { Filter, LogOut } from "lucide-react";
 import Footer from "../components/Footer";
 import Questions from "../components/Questions";
 import Gabarito from "../components/Gabarito";
+import OptionsProf from "../components/OptionsProf";
 
 const CreateQuiz = () => {
   //const navigate = useNavigate();
   const location = useLocation();
   const userLogado = location.state.user;
+
+  const dbUser = JSON.parse(localStorage.getItem("UserQuiz"));
 
   return (
     <>
@@ -40,7 +44,7 @@ const CreateQuiz = () => {
 
               <div className="itensUser">
                 <div className="newQuiz">
-                  <button className="btnQuiz">Criar Novo Simulado +</button>
+                  <button className="btnQuiz">Novo Simulado +</button>
                 </div>
                 <div className="perfilUser">
                   <p className="paragrafoUser">
@@ -50,9 +54,11 @@ const CreateQuiz = () => {
                   </p>
                 </div>
                 <div className="userExit">
-                  <button className="iconExit" href="">
-                    <LogOut />
-                  </button>
+                  <Link to={"/"}>
+                    <button className="iconExit" href="">
+                      <LogOut />
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -61,7 +67,7 @@ const CreateQuiz = () => {
         <main className="main-content container">
           <form className="create-painel">
             <h1 className="title-section">Novo Simulado</h1>
-            <hr />
+            <hr/>
             <div className="select-class">
               <div className="option-class">
                 <h1 className="title-questions">Matéria</h1>
@@ -82,11 +88,15 @@ const CreateQuiz = () => {
               <div className="option-teacher">
                 <h1 className="title-questions">Professor</h1>
                 <select name="" id="">
-                  <option value="Fulano1">Fulano de Almeida</option>
-                  <option value="Fulano2">Ciclano Lopes</option>
-                  <option value="Fulano3">Fulano Costa</option>
-                  <option value="Fulano4">Pedro Botelho</option>
-                  <option value="Fulano5">Beltrano Dutra</option>
+                  <OptionsProf db={dbUser} />
+                  
+                  {/* {
+                    dbUser.filter(user => user.isTeacher === true).map(prof => (
+                      <option key={prof.id} value={prof.id}>
+                        {prof.nome}
+                      </option>
+                    ))
+                  } */}
                 </select>
               </div>
             </div>
