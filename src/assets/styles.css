@@ -195,14 +195,19 @@ button {
   border-radius: 20px;
   background-color: #639a88;
   color: #e2fcf3;
-  padding: 45px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .methrics-Title {
-  font-size: 15px;
+  font-size: 140%;
+  text-align: center;
 }
 .methrics-Value {
-  font-size: 30px;
+  font-size: 180%;
+  text-align: center;
 }
 
 .quiz-painel {

@@ -1,12 +1,12 @@
 import { Trash } from "lucide-react";
 
-const CardsQuiz = ({ dbQuiz, userQuiz }) => {
+const CardsQuiz = ({ dbQuiz, userQuiz, onDelete }) => {
   return dbQuiz.map((quiz) => (
     
       <div className="card-Quiz">
         {userQuiz.isTeacher == true ? (
           <div className="trashCard">
-            <button onClick={() => alert("Clicado")}>
+            <button onClick={() => onDelete(quiz.id)}>
               <Trash />
             </button>
           </div>

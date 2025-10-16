@@ -1,8 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { LogOut } from "lucide-react";
 import CardsQuiz from "../components/CardsQuiz";
 import CardMethrics from "../components/CardMethrics";
 import EmptyPage from "../components/EmptyPage";
-import { LogOut } from "lucide-react";
 import Footer from "../components/Footer";
 
 const DashboardProf = () => {
@@ -11,17 +12,28 @@ const DashboardProf = () => {
   const profLogado = location.state.user;
   const navigate = useNavigate();
 
-  const dbQuiz = JSON.parse(localStorage.getItem("DbCardQuiz")) || [];
+  const [dbQuiz, setDbQuiz] = useState(JSON.parse(localStorage.getItem("DbCardQuiz")) || []); 
+    
+  //======================================================================//
 
+  //Função média notas
   function mediaNota(db) {
     let notas = 0;
     db.forEach((e) => {
       notas += e.notaMedia;
     });
     const notaMedia = notas / db.length;
-    return notaMedia.toFixed(1);
+    return notaMedia ? notaMedia.toFixed(1) : 0
   }
 
+  //Função Delete Card
+  function deleteCard(cardId) {
+    const newDb = dbQuiz.filter((item) => item.id !== cardId);
+    setDbQuiz(newDb)
+    localStorage.setItem('DbCardQuiz', JSON.stringify(newDb))
+  }
+
+  //======================================================================//
   return (
     <div className="div-pai">
       <header className="header-Prof">
@@ -37,7 +49,7 @@ const DashboardProf = () => {
                 to={profLogado ? "/DashboardProfessor" : "/DashboardAluno"}
                 className="linkNav"
               >
-                Home
+                Dashboard
               </Link>
               <Link to={"/"} className="linkNav" onClick={() => navigate("./")}>
                 Notas
@@ -60,7 +72,7 @@ const DashboardProf = () => {
               </div>
               <div className="perfilUser">
                 <p className="paragrafoUser">
-                  Olá professor,
+                  Olá professor(a),
                   <br />
                   {profLogado.nome}
                 </p>
@@ -93,13 +105,13 @@ const DashboardProf = () => {
             <EmptyPage />
           ) : (
             <div className="quiz-painel">
-              <CardsQuiz dbQuiz={dbQuiz} userQuiz={profLogado} />
+              <CardsQuiz dbQuiz={dbQuiz} userQuiz={profLogado} onDelete={deleteCard}/>
             </div>
           )}
         </div>
       </main>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 };

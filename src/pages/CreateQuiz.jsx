@@ -1,11 +1,11 @@
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, /* useNavigate ,*/ Link } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import Footer from "../components/Footer";
 import Questions from "../components/Questions";
 import Gabarito from "../components/Gabarito";
 
 const CreateQuiz = () => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const location = useLocation();
   const userLogado = location.state.user;
 
@@ -27,28 +27,17 @@ const CreateQuiz = () => {
                 >
                   Home
                 </Link>
-                <Link
-                  to={"/"}
-                  className="linkNav"
-                  onClick={() => navigate("./")}
-                >
+                <Link to={"/"} className="linkNav">
                   Notas
                 </Link>
-                <Link
-                  to={"/"}
-                  className="linkNav"
-                  onClick={() => navigate("./")}
-                >
+                <Link to={"/"} className="linkNav">
                   Cadastrar
                 </Link>
-                <Link
-                  to={"/"}
-                  className="linkNav"
-                  onClick={() => navigate("/")}
-                >
+                <Link to={"/"} className="linkNav">
                   Perfil
                 </Link>
               </div>
+
               <div className="itensUser">
                 <div className="newQuiz">
                   <button className="btnQuiz">Criar Novo Simulado +</button>
@@ -92,13 +81,13 @@ const CreateQuiz = () => {
               </div>
               <div className="option-teacher">
                 <h1 className="title-questions">Professor</h1>
-                 <select name="" id="">
+                <select name="" id="">
                   <option value="Fulano1">Fulano de Almeida</option>
                   <option value="Fulano2">Ciclano Lopes</option>
                   <option value="Fulano3">Fulano Costa</option>
                   <option value="Fulano4">Pedro Botelho</option>
                   <option value="Fulano5">Beltrano Dutra</option>
-                 </select>
+                </select>
               </div>
             </div>
             <hr />
