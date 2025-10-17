@@ -1,17 +1,70 @@
-//import { useState } from "react";
-import { useLocation, /* useNavigate ,*/ Link } from "react-router-dom";
-import { Filter, LogOut } from "lucide-react";
+import { useEffect } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import Footer from "../components/Footer";
 import Questions from "../components/Questions";
 import Gabarito from "../components/Gabarito";
 import OptionsProf from "../components/OptionsProf";
+import { useForm } from "react-hook-form";
 
 const CreateQuiz = () => {
-  //const navigate = useNavigate();
-  const location = useLocation();
-  const userLogado = location.state.user;
+  const { register, handleSubmit } = useForm();
 
-  const dbUser = JSON.parse(localStorage.getItem("UserQuiz"));
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.state || !location.state.user) {
+      alert("Você precisa estar logado para acessar esta página.");
+      navigate("/");
+    }
+  }, [location, navigate]);
+
+  const userLogado = location.state?.user;
+
+  if (!userLogado) {
+    return null;
+  }
+
+  const dbUser = JSON.parse(localStorage.getItem("UserQuiz")) || [];
+
+  const onSubmit = (data) => {
+    const dbAntigo = JSON.parse(localStorage.getItem("DbCardQuiz")) || [];
+
+    let idUnico;
+    let idJaExiste = true;
+
+    while (idJaExiste) {
+      const idSorteado = Math.floor(1000 + Math.random() * 9000).toString();
+      idJaExiste = dbAntigo.some((quiz) => quiz.id === idSorteado);
+
+      if (!idJaExiste) {
+        idUnico = idSorteado;
+      }
+    }
+
+    const novoCardQuiz = {
+      materia: data.materia,
+      img: `${data.materia.toLowerCase()}.png`,
+      id: idUnico,
+      legenda: data.legenda,
+      link: `/quiz/${idUnico}`,
+    };
+
+    const quizCompleto = {
+      ...novoCardQuiz,
+      professorId: data.professorId,
+      perguntas: data.perguntas,
+    };
+
+    const dbAtualizado = [novoCardQuiz, ...dbAntigo];
+    localStorage.setItem("DbCardQuiz", JSON.stringify(dbAtualizado));
+
+    localStorage.setItem(`quiz_${idUnico}`, JSON.stringify(quizCompleto));
+
+    alert("Simulado criado com sucesso!");
+    navigate("/DashboardProfessor");
+  };
 
   return (
     <>
@@ -41,7 +94,6 @@ const CreateQuiz = () => {
                   Perfil
                 </Link>
               </div>
-
               <div className="itensUser">
                 <div className="newQuiz">
                   <button className="btnQuiz">Novo Simulado +</button>
@@ -55,7 +107,7 @@ const CreateQuiz = () => {
                 </div>
                 <div className="userExit">
                   <Link to={"/"}>
-                    <button className="iconExit" href="">
+                    <button className="iconExit">
                       <LogOut />
                     </button>
                   </Link>
@@ -65,13 +117,13 @@ const CreateQuiz = () => {
           </div>
         </header>
         <main className="main-content container">
-          <form className="create-painel">
+          <form className="create-painel" onSubmit={handleSubmit(onSubmit)}>
             <h1 className="title-section">Novo Simulado</h1>
-            <hr/>
+            <hr />
             <div className="select-class">
               <div className="option-class">
                 <h1 className="title-questions">Matéria</h1>
-                <select name="" id="">
+                <select className="select-opt" {...register("materia")}>
                   <option value="Matemática">Matemática</option>
                   <option value="Português">Português</option>
                   <option value="Física">Física</option>
@@ -87,49 +139,49 @@ const CreateQuiz = () => {
               </div>
               <div className="option-teacher">
                 <h1 className="title-questions">Professor</h1>
-                <select name="" id="">
+                <select className="select-opt" {...register("professorId")}>
                   <OptionsProf db={dbUser} />
-                  
-                  {/* {
-                    dbUser.filter(user => user.isTeacher === true).map(prof => (
-                      <option key={prof.id} value={prof.id}>
-                        {prof.nome}
-                      </option>
-                    ))
-                  } */}
                 </select>
               </div>
             </div>
             <hr />
+            <div className="create-legend">
+              <h1 className="title-questions">Legenda</h1>
+              <input
+                type="text"
+                className="input-question-text"
+                placeholder="Insira aqui as informações sobre o simulado."
+                {...register("legenda", { required: true })}
+              />
+            </div>
+            <hr />
             <div className="area-questions">
-              <Questions numeroQ={1} />
-              <Questions numeroQ={2} />
-              <Questions numeroQ={3} />
-              <Questions numeroQ={4} />
-              <Questions numeroQ={5} />
-              <Questions numeroQ={6} />
-              <Questions numeroQ={7} />
-              <Questions numeroQ={8} />
-              <Questions numeroQ={9} />
-              <Questions numeroQ={10} />
+              {[...Array(10)].map((_, index) => (
+                <Questions
+                  key={index}
+                  numeroQ={index + 1}
+                  register={register}
+                  index={index}
+                />
+              ))}
             </div>
             <div className="gabarito">
               <h1 className="title-questions">Gabarito</h1>
               <div className="gabarito-alt">
-                <Gabarito alt={1}></Gabarito>
-                <Gabarito alt={2}></Gabarito>
-                <Gabarito alt={3}></Gabarito>
-                <Gabarito alt={4}></Gabarito>
-                <Gabarito alt={5}></Gabarito>
-                <Gabarito alt={6}></Gabarito>
-                <Gabarito alt={7}></Gabarito>
-                <Gabarito alt={8}></Gabarito>
-                <Gabarito alt={9}></Gabarito>
-                <Gabarito alt={10}></Gabarito>
+                {[...Array(10)].map((_, index) => (
+                  <Gabarito
+                    key={index}
+                    alt={index + 1}
+                    register={register}
+                    index={index}
+                  />
+                ))}
               </div>
             </div>
             <div className="enviarFormQuiz">
-              <button className="formQuiz">Criar</button>
+              <button type="submit" className="formQuiz">
+                Criar
+              </button>
             </div>
           </form>
         </main>
