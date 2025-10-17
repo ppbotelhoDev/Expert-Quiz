@@ -13,6 +13,16 @@ const Questions = ({ numeroQ, register, index }) => {
         />
       </div>
       <div className="box-answers">
+        {/* <div className="input-answers">
+          <h3 className="title-alt">Figura/Representação: </h3>
+          <input
+            type="file"
+            className="file-answer"
+            maxLength={300}
+            placeholder="Max. 300 caracteres"
+            {...register(`perguntas.${index}.image`, { required: false })}
+          />
+        </div> */}
         <div className="input-answers">
           <h3 className="title-alt">Alternativa A: </h3>
           <input

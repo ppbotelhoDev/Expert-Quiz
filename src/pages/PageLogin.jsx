@@ -30,17 +30,14 @@ const PageLogin = () => {
     );
     //Valida se encontrou ou não
     if (findUser) {
-      //Se sim ele valida se é Aluno ou Professor
-      if (findUser.isTeacher) {
-        //Se for professor ele navega ao dashboard do professor
-        
+      // SALVE O USUÁRIO LOGADO AQUI!
+      sessionStorage.setItem("usuarioLogado", JSON.stringify(findUser));
+
+      if (findUser.isTeacher || findUser.isTeacher == "director") {
         navigate("/DashboardProfessor", { state: { user: findUser } });
       } else {
-        //Se não ele navega até o dashboard do aluno
-        
         navigate("/DashboardAluno", { state: { user: findUser } });
       }
-      //Caso nao seja encontrado tratamos aqui!
     } else {
       alert("Usuário ou senha incorreta");
     }
