@@ -11,7 +11,7 @@ const PageLogin = () => {
       id: 9999,
       nome: "Usuário Padrão",
       isTeacher: true,
-      senha: "admin123",
+      senha: "userPadrao123",
     },
   ];
 
@@ -26,19 +26,17 @@ const PageLogin = () => {
 
     //Procura e valida se o usuário existe
     const findUser = dbUser.find(
-      (user) => user.id === Number(inputId) && user.senha === inputSenha
+      (user) =>
+        (user.id === Number(inputId) || user.cpf === Number(inputId)) &&
+        user.senha === inputSenha
     );
     //Valida se encontrou ou não
     if (findUser) {
-      // SALVE O USUÁRIO LOGADO AQUI!
+      //Se sim, redireciona o usuário para o Dashboard
       sessionStorage.setItem("usuarioLogado", JSON.stringify(findUser));
-
-      if (findUser.isTeacher || findUser.isTeacher == "director") {
-        navigate("/DashboardProfessor", { state: { user: findUser } });
-      } else {
-        navigate("/DashboardAluno", { state: { user: findUser } });
-      }
+      navigate("/Dashboard");
     } else {
+      //Se não emite um alert de "usuário nao encontrado"
       alert("Usuário ou senha incorreta");
     }
   };
@@ -46,27 +44,33 @@ const PageLogin = () => {
   return (
     <div className="bodyLogin main-content">
       <div className="cardLogin">
-        <img src="imgLogin.png" alt="" />
-        <form onSubmit={handleLogin} className="formLogin" action="">
-          <img src="logoExpert.png" alt="" />
-          <input
-            placeholder="Id do usuário"
-            type="number"
-            className="inputCard"
-            value={inputId}
-            onChange={(e) => setInputId(e.target.value)}
-          />
-          <input
-            placeholder="Senha do usuário"
-            type="password"
-            className="inputCard"
-            value={inputSenha}
-            onChange={(e) => setInputSenha(e.target.value)}
-          />
+        <div className="div-img-login">
+          <img className="img-login" src="imgLogin.png" />
+        </div>
+        <form onSubmit={handleLogin} className="form-login">
+          <div className="img-formLogin">
+            <img src="logoVestibule.png" alt="Logo Vestibule" width={150} />
+          </div>
+          <div className="input-login">
+            <input
+              placeholder="Id do usuário"
+              type="number"
+              className="input-card"
+              value={inputId}
+              onChange={(e) => setInputId(e.target.value)}
+            />
 
-          <button type="submit" className="btnSubmit">
-            Entrar
-          </button>
+            <input
+              placeholder="Senha do usuário"
+              type="password"
+              className="input-card"
+              value={inputSenha}
+              onChange={(e) => setInputSenha(e.target.value)}
+            />
+            <button type="submit" className="btnSubmit">
+              Entrar
+            </button>
+          </div>
         </form>
       </div>
     </div>

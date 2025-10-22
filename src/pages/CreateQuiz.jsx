@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Questions from "../components/Questions";
 import Gabarito from "../components/Gabarito";
@@ -10,19 +10,25 @@ import { useForm } from "react-hook-form";
 const CreateQuiz = () => {
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
-  
-  const userLogado = JSON.parse(sessionStorage.getItem("usuarioLogado"));
+
+  const userAtual = JSON.parse(sessionStorage.getItem("usuarioLogado"));
 
   useEffect(() => {
-    if (!userLogado) {
+    if (!userAtual) {
       alert("Você precisa estar logado para acessar esta página.");
-      navigate("/");
+      navigate("/Login");
     }
-  }, [userLogado, navigate]);
+  }, [userAtual, navigate]);
 
-  if (!userLogado) {
+
+  if (!userAtual) {
     return null;
   }
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("usuarioLogado");
+    navigate("/");
+  };
 
   const dbUser = JSON.parse(localStorage.getItem("UserQuiz")) || [];
 
@@ -59,67 +65,20 @@ const CreateQuiz = () => {
     localStorage.setItem(`quiz_${idUnico}`, JSON.stringify(quizCompleto));
 
     alert("Simulado criado com sucesso!");
-    navigate("/DashboardProfessor");
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("usuarioLogado");
-    navigate("/");
+    navigate("/Dashboard");
   };
 
   return (
     <div className="div-pai">
-      <header className="header-Prof">
-        <div className="containerHeader container">
-          <div className="divLogo">
-            <Link to={"/DashboardProfessor"}>
-              <img className="logo" src={"/logo.png"} alt="Logo Expert Vest" />
-            </Link>
-          </div>
-          <nav className="navbar">
-            <div className="linksNav">
-              <Link to={"/DashboardProfessor"} className="linkNav">
-                Home
-              </Link>
-              <Link to={"/Notas"} className="linkNav">
-                Notas
-              </Link>
-              <Link to={"/Cadastrar-aluno"} className="linkNav">
-                Cadastrar
-              </Link>
-              <Link to={"/Perfil"} className="linkNav">
-                Perfil
-              </Link>
-            </div>
-            <div className="itensUser">
-              <div className="newQuiz">
-                <button className="btnQuiz" onClick={() => navigate("/CreateQuiz")}>
-                  Novo Simulado +
-                </button>
-              </div>
-              <div className="perfilUser">
-                <p className="paragrafoUser">
-                  Olá professor,
-                  <br />
-                  {userLogado.nome}
-                </p>
-              </div>
-              <div className="userExit">
-                <button className="iconExit" onClick={handleLogout}>
-                  <LogOut />
-                </button>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </header>
-      <main className="main-content container">
+      <Header userAtual={userAtual} logout={handleLogout}/>
+
+      <main className="main-content container mg-sup">
+        <h1 className="title-section">Novo Simulado</h1>
         <form className="create-painel" onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="title-section">Novo Simulado</h1>
-          <hr />
+          
           <div className="select-class">
             <div className="option-class">
-              <h1 className="title-questions">Matéria</h1>
+              <h1 className="title-sections">Matéria</h1>
               <select className="select-opt" {...register("materia")}>
                 <option value="Matemática">Matemática</option>
                 <option value="Português">Português</option>

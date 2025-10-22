@@ -1,11 +1,17 @@
+//Import estilo/Css
 import "./assets/styles.css";
-import { Routes, Route } from "react-router-dom"; // 1. Importe as ferramentas
-import PageLogin from "./pages/PageLogin.jsx"; // 2. Importe suas páginas
-import DashboardProf from "./pages/DashboardProf.jsx"; // 2. Importe suas páginas
-import DashboardAluno from "./pages/DashboardAluno.jsx";
-import CadastroUser from "./pages/CadastroUser.jsx";
-import CreateQuiz from "./pages/CreateQuiz.jsx";
+//Import Ferramentas
+import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
+//Import Páginas
+import PageLogin from "./pages/PageLogin.jsx"; 
+import DashboardProf from "./pages/Dashboard.jsx"; 
+import CadastroUser from "./pages/CadastroUser.jsx";
+import Perfil from "./pages/Perfil.jsx";
+import Notas from "./pages/Notas.jsx";
+import CreateQuiz from "./pages/CreateQuiz.jsx";
+import Simulado from "./pages/Simulado.jsx";
+
 
 function App() {
   useEffect(() => {
@@ -14,11 +20,13 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<PageLogin />} />
-        <Route path="/DashboardAluno" element={<DashboardAluno />} />
-        <Route path="/DashboardProfessor" element={<DashboardProf />} />
+        <Route path="/Login" element={<PageLogin />} />
+        <Route path="/Dashboard" element={<DashboardProf />} />
+        <Route path="/Notas" element={<Notas />} />
         <Route path="/Cadastro" element={<CadastroUser />} />
+        <Route path="/Perfil" element={<Perfil />} />
         <Route path="/CreateQuiz" element={<CreateQuiz />} />
+        <Route path="/Simulado" element={<Simulado/>} />
       </Routes>
     </>
   );
