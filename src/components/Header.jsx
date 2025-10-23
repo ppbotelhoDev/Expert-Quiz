@@ -6,7 +6,7 @@ const Header = () => {
   const userAtual = JSON.parse(sessionStorage.getItem("usuarioLogado"));
   function handleLogout() {
     sessionStorage.removeItem("usuarioLogado");
-    navigate("/Login");
+    navigate("/");
   }
 
   return (

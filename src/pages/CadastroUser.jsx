@@ -43,7 +43,7 @@ const CadastroUser = () => {
   useEffect(() => {
     if (!userAtual) {
       alert("Faça login para acessar esta página.");
-      navigate("/Login");
+      navigate("/");
     }
   }, [userAtual, navigate]);
 

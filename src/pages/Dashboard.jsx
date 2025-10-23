@@ -29,7 +29,7 @@ const InitialDashboard = () => {
   useEffect(() => {
     if (!userAtual) {
       alert("Você precisa estar logado para acessar esta página.");
-      navigate("/Login");
+      navigate("/");
     }
   }, [userAtual, navigate]);
 

@@ -15,7 +15,7 @@ const ComponentesNotas = () => {
   useEffect(() => {
     if (!userAtual) {
       alert("Você precisa estar logado para acessar esta página.");
-      navigate("/Login"); // Certifique-se que sua rota de login é "/Login"
+      navigate("/"); 
     }
   }, [userAtual, navigate]);
 
