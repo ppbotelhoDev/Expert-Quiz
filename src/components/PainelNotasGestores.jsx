@@ -8,8 +8,8 @@ const PainelNotaGestores = ({ dbAlunos }) => {
     <div className="nota-media" key={userAtual.id}>
       <div className="photo-user-notas">
         <h4>
-          {userAtual.PrimeiroNome[0]}
-          {userAtual.Sobrenome[0]}
+          {userAtual.primeiroNome[0]}
+          {userAtual.sobrenome[0]}
         </h4>
       </div>
       <div className="name-user">

@@ -192,14 +192,13 @@ button {
   /* Diz para o conteúdo principal crescer e empurrar o rodapé */
 }
 .mg-sup {
-  margin: 110px auto 60px auto;
+  margin: 100px auto 60px auto;
 }
 
 .title-sections {
   color: #136b4e;
   width: 40%;
   text-align: start;
-  margin: 10px 0px;
 }
 /* Dashboard Painel */
 
@@ -264,10 +263,13 @@ button {
   padding: 10px;
   border-top: 5px solid#136b4e;
   border-radius: 5px 5px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .info-select {
   width: 100%;
-  height: 20%;
+  height: 30%;
   padding: 10px;
   & select {
     height: 100%;
@@ -320,8 +322,8 @@ button {
   padding: 10px;
 }
 .box-ranking {
-  background-color: #8aa38a;
-  color: #f7f9fb;
+  background-color: #f7f9fb;
+  color: #333333;
   height: 23%;
   border-radius: 5px;
   display: flex;
@@ -354,7 +356,7 @@ button {
   font-weight: 600;
 }
 .materia-ranking {
-  width: 30%;
+  width: 40%;
   display: flex;
   align-items: center;
   justify-content: start;
@@ -544,7 +546,7 @@ footer {
   color: #afc5be;
   width: 100%;
   height: 100%;
-  margin-bottom: 30px;
+  margin: 30px 0px;
   padding: 47px;
 }
 
@@ -967,7 +969,7 @@ hr {
   align-items: center;
 
   & h4 {
-    border: 1px solid #136b4e;
+    border: 2px solid #136b4e;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -1057,7 +1059,7 @@ hr {
   display: flex;
   justify-content: space-between;
 }
-.box-radio{
+.box-radio {
   border: 1px solid #136b4e;
   width: 48%;
   padding: 10px;
@@ -1071,17 +1073,37 @@ hr {
   color: #e8edf2;
 }
 
-.checkbox-group{
-  & label{
+.checkbox-group {
+  & label {
     padding-left: 10px;
     cursor: pointer;
   }
 }
 
-.btn-submit-cadastro{
+.btn-submit-cadastro {
   background-color: #136b4e;
   color: #e8edf2;
   width: 25%;
   padding: 20px;
   cursor: pointer;
+}
+
+/* ===== Simulados ===== */
+.question-bloco {
+  background-color: #f7f9fb;
+  padding: 20px;
+  margin: 10px;
+  text-align: start;
+  border-radius: 20px;
+  & h3 {
+    padding: 10px 0px;
+  }
+}
+
+.option-label {
+  margin: 10px 0px;
+  & label {
+    padding-left: 10px;
+    font-weight: 600;
+  }
 }

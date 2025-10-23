@@ -82,8 +82,8 @@ const CadastroUser = () => {
 
       isTeacher: data.tipoUsuario === "professor",
       nomeCompleto: nomeCompleto,
-      PrimeiroNome: primeiroNome,
-      Sobrenome: sobrenome,
+      primeiroNome: primeiroNome,
+      sobrenome: sobrenome,
       email: data.email,
       cpf: data.cpf,
       data: data.data,

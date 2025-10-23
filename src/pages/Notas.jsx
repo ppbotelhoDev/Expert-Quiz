@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { BookPlus } from 'lucide-react';
 import Header from "../components/Header";
 import ComponenteNotas from "../components/ComponentesNotas";
 import Footer from "../components/Footer";
@@ -34,7 +35,9 @@ const Notas = () => {
         <h1 className="title-sections">Notas do Aluno</h1>
         <div className="section-notas">
           <div className="aba-title">
-            <div className="photo-user-notas"></div>
+            <div className="photo-user-notas">
+              <BookPlus/>
+            </div>
             <div className="name-user">
               <h3>Nome</h3>
             </div>

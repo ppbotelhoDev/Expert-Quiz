@@ -1,0 +1,15 @@
+const RankingBest = ({array}) => {
+    let i;
+    return(
+        array.map(user => 
+        <div className="box-ranking">
+            <div className="icon-ranking">
+              <img src="medal2.png" alt="" width={20} />
+            </div>
+            <div className="nome-aluno">{user.nomeAluno}</div>
+            <div className="nota-aluno">{user.nota + " / 10"}</div>
+        </div>
+    )
+}
+
+export default RankingBest;

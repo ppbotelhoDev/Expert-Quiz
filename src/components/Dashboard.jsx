@@ -1,9 +1,143 @@
+import { useState } from "react";
+
 const Dashboard = ({ dbQuiz }) => {
-  const dbUser = JSON.parse(localStorage.getItem("UserQuiz"));
-  const alunosAtivos = dbUser.filter((user) => user.isTeacher === false);
-  //const notaMédia = dbQuiz.
-  const nomeAluno = "Pedro Botelho";
-  const notaAluno = 9.5;
+  const [listaUsuarios] = useState(
+    () => JSON.parse(localStorage.getItem("UserQuiz")) || []
+  );
+  const alunosAtivos = listaUsuarios.filter((user) => user.isTeacher === false);
+  const userAtual = JSON.parse(sessionStorage.getItem("usuarioLogado"));
+
+  const [materiaSelecionada, setMateriaSelecionada] = useState(
+    userAtual.isTeacher === true ? userAtual.materias[0] : "Matemática"
+  );
+
+  const MATERIAS_TOTAIS = [
+    "Matemática",
+    "Português",
+    "Física",
+    "Química",
+    "Biologia",
+    "Geografia",
+    "História",
+    "Tecnologia",
+    "Inglês",
+    "Filosofia",
+    "Sociologia",
+  ];
+  let MATERIAS_PROF = userAtual.materias;
+
+  //Funções
+
+  const handleMateriaChange = (event) => {
+    setMateriaSelecionada(event.target.value); // Atualiza o estado com o valor selecionado
+  };
+
+  const mediaGeral = () => {
+    //Filtra os alunos
+    const filter = listaUsuarios.filter((u) => u.isTeacher === false);
+    //Mapeia as notas
+    const notas = filter.map((user) => user.notaMedia);
+    //soma todas os valores
+    const soma = notas.reduce((acc, vlr) => acc + vlr, 0);
+    //Caucula a média das notas e retorna
+    const tamanho = notas.length;
+    return (soma / tamanho).toFixed(1);
+  };
+
+  //Ranking 3 melhores médias
+  const top3Alunos = (users) => {
+    const alunos = users.filter((user) => user.isTeacher === false);
+    const alunosOrdenados = alunos.sort((alunoA, alunoB) => {
+      // Garante que notaMedia existe e é um número, tratando null/undefined como 0
+      const notaB = alunoB.notaMedia ?? 0;
+      const notaA = alunoA.notaMedia ?? 0;
+      return notaB - notaA;
+    });
+    const top3 = alunosOrdenados.slice(0, 3);
+    return top3;
+  };
+  const top3Aluno = top3Alunos(listaUsuarios);
+
+  //Top 3 menores médias
+  const menores3Medias = (users) => {
+    const alunos = users.filter((user) => user.isTeacher === false);
+    const alunosOrdenados = alunos.sort((alunoA, alunoB) => {
+      // Garante que notaMedia existe e é um número, tratando null/undefined como 0
+      const notaB = alunoB.notaMedia ?? 0;
+      const notaA = alunoA.notaMedia ?? 0;
+      return notaA - notaB;
+    });
+    const top3 = alunosOrdenados.slice(0, 3);
+    return top3;
+  };
+  const menorTop3 = menores3Medias(listaUsuarios);
+
+  //Top 3 melhores médias de simulados
+  const top3simulados = (dbSim) => {
+    const simuladosOrdenados = dbSim.sort((sim1, sim2) => {
+      // Garante que notaMedia existe e é um número, tratando null/undefined como 0
+      const notaA = sim1.notaMedia ?? 0;
+      const notaB = sim2.notaMedia ?? 0;
+      return notaB - notaA;
+    });
+    const top3 = simuladosOrdenados.slice(0, 3);
+    return top3;
+  };
+  const top3Sim = top3simulados(dbQuiz);
+
+  function renderProf() {
+    return MATERIAS_PROF.map((materia) => (
+      <option key={materia} value={materia}>
+        {materia}
+      </option>
+    ));
+  }
+  function renderGeral() {
+    return MATERIAS_TOTAIS.map((materia) => (
+      <option key={materia} value={materia}>
+        {materia}
+      </option>
+    ));
+  }
+
+  //Identifica os quizes selecioandos ==============================================
+  const quizzesDaMateria = dbQuiz.filter(
+    (quiz) => quiz.materia === materiaSelecionada
+  );
+  let notaMediaDaMateria;
+  if (quizzesDaMateria.length > 0) {
+    // Soma as notas médias dos quizzes filtrados
+    const somaNotas = quizzesDaMateria.reduce((acc, quiz) => {
+      // Usa ?? 0 para tratar quizzes sem notaMedia
+      return acc + (quiz.notaMedia ?? 0);
+    }, 0);
+    // Calcula a média e formata
+    notaMediaDaMateria = (somaNotas / quizzesDaMateria.length).toFixed(1);
+  }
+
+  
+  //QUIZ MAIOR NOTA =================================================================
+  let quizMaiorMedia = { id: "N/A", nota: 0.0 }; // Valor padrão
+
+  if (quizzesDaMateria.length > 0) {
+    // Usa reduce para encontrar o quiz com a maior notaMedia
+    quizMaiorMedia = quizzesDaMateria.reduce((quizMaiorNota, quizAtual) => {
+      // Pega a nota do quiz atual, tratando se não existir (?? 0)
+      const notaAtual = quizAtual.notaMedia ?? 0;
+      // Pega a nota do "maior" encontrado até agora
+      const maiorNotaAteAgora = quizMaiorNota.notaMedia ?? 0;
+
+      // Compara: se a nota atual for maior, o quizAtual é o novo "maior"
+      return notaAtual > maiorNotaAteAgora ? quizAtual : quizMaiorNota;
+    }, quizzesDaMateria[0]); // Começa a comparação com o primeiro quiz da lista
+
+    // Ajusta o formato do objeto final para o JSX
+    quizMaiorMedia = {
+      id: quizMaiorMedia.id,
+      nota: (quizMaiorMedia.notaMedia ?? 0).toFixed(1), // Pega a nota e formata
+    };
+
+  }
 
   return (
     <div className="section-dashboard ">
@@ -19,7 +153,7 @@ const Dashboard = ({ dbQuiz }) => {
           </div>
           <div className="nota-media-geral cards-dsh ">
             <h4 className="title-card ">Nota Média Geral</h4>
-            <h2 className="">{8.9 + "/10"}</h2>
+            <h2 className="">{mediaGeral() + "/10"}</h2>
           </div>
         </div>
 
@@ -29,29 +163,57 @@ const Dashboard = ({ dbQuiz }) => {
           </div>
           <div className="box-ranking">
             <div className="icon-ranking">
-              <img src={"matemática.png"} alt="" width={20} />
+              <img
+                src={`${top3Sim[0] ? top3Sim[0].img : "simulado.png"}`}
+                alt=""
+                width={20}
+              />
             </div>
-            <div className="materia-ranking">{"Matemática"}</div>
-            <div className="id-simulado">#{2312}</div>
-            <div className="nota-ranking">{8.9} / 10</div>
+            <div className="materia-ranking">
+              {top3Sim[0] ? top3Sim[0].materia : "Default"}
+            </div>
+            <div className="id-simulado">
+              #{top3Sim[0] ? top3Sim[0].id : "00000"}
+            </div>
+            <div className="nota-ranking">
+              {top3Sim[0] ? top3Sim[0].notaMedia : "0"} / 10
+            </div>
           </div>
-
           <div className="box-ranking">
             <div className="icon-ranking">
-              <img src={"português.png"} alt="" width={20} />
+              <img
+                src={`${top3Sim[1] ? top3Sim[1].img : "simulado.png"}`}
+                alt=""
+                width={20}
+              />
             </div>
-            <div className="materia-ranking">{"Português"}</div>
-            <div className="id-simulado">#{9754}</div>
-            <div className="nota-ranking">{8.5} / 10</div>
+            <div className="materia-ranking">
+              {top3Sim[1] ? top3Sim[1].materia : "Default"}
+            </div>
+            <div className="id-simulado">
+              #{top3Sim[1] ? top3Sim[1].id : "00000"}
+            </div>
+            <div className="nota-ranking">
+              {top3Sim[1] ? top3Sim[1].notaMedia : "0"} / 10
+            </div>
           </div>
-
           <div className="box-ranking">
             <div className="icon-ranking">
-              <img src={"inglês.png"} alt="" width={20} />
+              <img
+                src={`${top3Sim[2] ? top3Sim[2].img : "simulado.png"}`}
+                alt=""
+                width={20}
+              />
             </div>
-            <div className="materia-ranking">{"Inglês"}</div>
-            <div className="id-simulado">#{4345}</div>
-            <div className="nota-ranking">{8.3} / 10</div>
+            <div className="materia-ranking">
+              {top3Sim[2] ? top3Sim[2].materia : "Default"}
+            </div>
+            <div className="id-simulado">
+              #{top3Sim[2] ? top3Sim[2].id : "00000"}
+            </div>
+            <div className="nota-ranking">
+              {top3Sim[2] ? top3Sim[2].notaMedia : "0"} / 10
+            </div>
           </div>
         </div>
       </div>
@@ -61,40 +223,24 @@ const Dashboard = ({ dbQuiz }) => {
             <h4>Informaçoes por matéria</h4>
           </div>
           <div className="info-select">
-            <select name="" id="materias">
-              <option value="Matemática">Matemática</option>
-              <option value="Português">Português</option>
-              <option value="Física">Física</option>
-              <option value="Química">Química</option>
-              <option value="Biologia">Biologia</option>
-              <option value="Geografia">Geografia</option>
-              <option value="História">História</option>
-              <option value="Tecnologia">Tecnologia</option>
-              <option value="Inglês">Inglês</option>
-              <option value="Filosofia">Filosofia</option>
-              <option value="Sociologia">Sociologia</option>
-            </select>
+            <select
+              name="materias-select" // Adicione um name
+              id="materias"
+              value={materiaSelecionada} // Conecta o valor ao estado
+              onChange={handleMateriaChange}
+            >
+              {userAtual.isTeacher === true ? renderProf() : renderGeral()}
+            </select>  
           </div>
           <div className="card-info">
-            <h5>Nota Média</h5>
-            <h4>{8.9 + "/10"}</h4>
+            <h5>Média Geral</h5>
+            <h4>{notaMediaDaMateria} / 10</h4>
           </div>
           <div className="card-info">
-            <h5>Professor</h5>
-            <h4>{"Pedro Paulo"}</h4>
+            <h5>Melhor Média</h5>
+            <h4>{quizMaiorMedia.nota} / 10</h4>
           </div>
-          <div className="card-info display">
-            <h5>Maior média</h5>
-            <div className="display">
-              <div>
-                <h4>{nomeAluno}</h4>
-              </div>
-              <div className="gray">|</div>
-              <div>
-                <h4>{notaAluno} / 10</h4>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
       <div className="dash-right">
@@ -106,22 +252,34 @@ const Dashboard = ({ dbQuiz }) => {
             <div className="icon-ranking">
               <img src="medal1.png" alt="" width={20} />
             </div>
-            <div className="nome-aluno">{nomeAluno}</div>
-            <div className="nota-aluno">{9.8 + " / 10"}</div>
+            <div className="nome-aluno">{`${
+              top3Aluno[0] ? top3Aluno[0].primeiroNome : "User"
+            }  ${top3Aluno[0] ? top3Aluno[0].sobrenome : "Default"}`}</div>
+            <div className="nota-aluno">
+              {`${top3Aluno[0] ? top3Aluno[0].notaMedia : 0}` + " / 10"}
+            </div>
           </div>
           <div className="box-ranking">
             <div className="icon-ranking">
               <img src="medal2.png" alt="" width={20} />
             </div>
-            <div className="nome-aluno">{nomeAluno}</div>
-            <div className="nota-aluno">{9.5 + " / 10"}</div>
+            <div className="nome-aluno">{`${
+              top3Aluno[1] ? top3Aluno[1].primeiroNome : "User"
+            }  ${top3Aluno[1] ? top3Aluno[1].sobrenome : "Default"}`}</div>
+            <div className="nota-aluno">
+              {`${top3Aluno[1] ? top3Aluno[1].notaMedia : 0}` + " / 10"}
+            </div>
           </div>
           <div className="box-ranking">
             <div className="icon-ranking">
               <img src="medal3.png" alt="" width={20} />
             </div>
-            <div className="nome-aluno">{nomeAluno}</div>
-            <div className="nota-aluno">{9.4 + " / 10"}</div>
+            <div className="nome-aluno">{`${
+              top3Aluno[2] ? top3Aluno[2].primeiroNome : "User"
+            }  ${top3Aluno[2] ? top3Aluno[2].sobrenome : "Default"}`}</div>
+            <div className="nota-aluno">
+              {`${top3Aluno[2] ? top3Aluno[2].notaMedia : 0}` + " / 10"}
+            </div>
           </div>
         </div>
         <div className="worst3-alunos ">
@@ -132,27 +290,40 @@ const Dashboard = ({ dbQuiz }) => {
             <div className="icon-ranking">
               <img src="red1.png" alt="" width={20} />
             </div>
-            <div className="nome-aluno">{nomeAluno}</div>
-            <div className="nota-aluno">{6.9 + " / 10"}</div>
+            <div className="nome-aluno">{`${
+              menorTop3[2] ? menorTop3[2].primeiroNome : "User"
+            }  ${menorTop3[2] ? menorTop3[2].sobrenome : "Default"}`}</div>
+            <div className="nota-aluno">
+              {`${menorTop3[2] ? menorTop3[2].notaMedia : 0}` + " / 10"}
+            </div>
           </div>
           <div className="box-ranking">
             <div className="icon-ranking">
               <img src="red2.png" alt="" width={20} />
             </div>
-            <div className="nome-aluno">{nomeAluno}</div>
-            <div className="nota-aluno">{6.5 + " / 10"}</div>
+            <div className="nome-aluno">{`${
+              menorTop3[1] ? menorTop3[1].primeiroNome : "User"
+            }  ${menorTop3[1] ? menorTop3[1].sobrenome : "Default"}`}</div>
+            <div className="nota-aluno">
+              {`${menorTop3[1] ? menorTop3[1].notaMedia : 0}` + " / 10"}
+            </div>
           </div>
           <div className="box-ranking">
             <div className="icon-ranking">
               <img src="red3.png" alt="" width={20} />
             </div>
-            <div className="nome-aluno">{nomeAluno}</div>
-            <div className="nota-aluno">{6.3 + " / 10"}</div>
+            <div className="nome-aluno">{`${
+              menorTop3[0] ? menorTop3[0].primeiroNome : "User"
+            }  ${menorTop3[0] ? menorTop3[0].sobrenome : "Default"}`}</div>
+            <div className="nota-aluno">
+              {`${menorTop3[0] ? menorTop3[0].notaMedia : 0}` + " / 10"}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
+  /*  */
 };
 
 export default Dashboard;

@@ -4,6 +4,7 @@ import "./assets/styles.css";
 import { Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 //Import Páginas
+import PaginaSimulado from './pages/PaginaSimulado';
 import PageLogin from "./pages/PageLogin.jsx"; 
 import DashboardProf from "./pages/Dashboard.jsx"; 
 import CadastroUser from "./pages/CadastroUser.jsx";
@@ -27,6 +28,7 @@ function App() {
         <Route path="/Perfil" element={<Perfil />} />
         <Route path="/CreateQuiz" element={<CreateQuiz />} />
         <Route path="/Simulado" element={<Simulado/>} />
+        <Route path="/quiz/:quizId" element={ <PaginaSimulado /> } />
       </Routes>
     </>
   );

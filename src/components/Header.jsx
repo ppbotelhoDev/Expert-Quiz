@@ -54,7 +54,7 @@ const Header = () => {
                   : "Olá Aluno(a)"}
                 ,
                 <br />
-                {userAtual.PrimeiroNome} {userAtual.Sobrenome}
+                {userAtual.primeiroNome} {userAtual.sobrenome}
               </p>
             </div>
             <div className="userExit">
