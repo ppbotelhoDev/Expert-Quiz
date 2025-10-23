@@ -27,7 +27,7 @@ const PainelNotaAlunos = ({ userAtual }) => {
           )}
         </div>
       </div>
-      <div className="all-notas">userAtual.</div>
+      {/* <div className="all-notas">userAtual.</div> */}
     </div>
   );
 };

@@ -115,29 +115,29 @@ const Dashboard = ({ dbQuiz }) => {
     notaMediaDaMateria = (somaNotas / quizzesDaMateria.length).toFixed(1);
   }
 
-  
-  //QUIZ MAIOR NOTA =================================================================
-  let quizMaiorMedia = { id: "N/A", nota: 0.0 }; // Valor padrão
+  //QUIZ MAIOR NOTA (CORRIGIDO PARA PEGAR A MELHOR NOTA INDIVIDUAL) =================
+  let melhorNota = 0; // Valor padrão
 
   if (quizzesDaMateria.length > 0) {
-    // Usa reduce para encontrar o quiz com a maior notaMedia
-    quizMaiorMedia = quizzesDaMateria.reduce((quizMaiorNota, quizAtual) => {
-      // Pega a nota do quiz atual, tratando se não existir (?? 0)
-      const notaAtual = quizAtual.notaMedia ?? 0;
-      // Pega a nota do "maior" encontrado até agora
-      const maiorNotaAteAgora = quizMaiorNota.notaMedia ?? 0;
+    // 1. Usa .flatMap() para juntar todos os arrays 'notas' de todos os quizzes dessa matéria.
+    // Ex: [[{nota: 8}, {nota: 3}], [{nota: 7}]]  =>  [{nota: 8}, {nota: 3}, {nota: 7}]
+    const todasAsNotasIndividuais = quizzesDaMateria.flatMap(
+      (quiz) => quiz.notas || []
+    );
 
-      // Compara: se a nota atual for maior, o quizAtual é o novo "maior"
-      return notaAtual > maiorNotaAteAgora ? quizAtual : quizMaiorNota;
-    }, quizzesDaMateria[0]); // Começa a comparação com o primeiro quiz da lista
+    if (todasAsNotasIndividuais.length > 0) {
+      // 2. Mapeia para pegar apenas os valores numéricos das notas.
+      // Ex: [{nota: 8}, {nota: 3}, {nota: 7}]  =>  [8, 3, 7]
+      const valoresDasNotas = todasAsNotasIndividuais.map((n) => n.nota); // 3. Usa Math.max() para encontrar o maior número no array. // Ex: Math.max(8, 3, 7)  =>  8
 
-    // Ajusta o formato do objeto final para o JSX
-    quizMaiorMedia = {
-      id: quizMaiorMedia.id,
-      nota: (quizMaiorMedia.notaMedia ?? 0).toFixed(1), // Pega a nota e formata
-    };
+      melhorNota = Math.max(...valoresDasNotas);
+    }
+  } // Ajusta o formato do objeto para o JSX (o JSX espera 'quizMaiorMedia.nota')
 
-  }
+  const quizMaiorMedia = {
+    id: "N/A", // O ID não é mais relevante, pois é a nota máxima de todos os quizzes
+    nota: melhorNota.toFixed(1), // Salva a nota máxima (ex: 8.0)
+  };
 
   return (
     <div className="section-dashboard ">
@@ -230,7 +230,7 @@ const Dashboard = ({ dbQuiz }) => {
               onChange={handleMateriaChange}
             >
               {userAtual.isTeacher === true ? renderProf() : renderGeral()}
-            </select>  
+            </select>
           </div>
           <div className="card-info">
             <h5>Média Geral</h5>
@@ -240,7 +240,6 @@ const Dashboard = ({ dbQuiz }) => {
             <h5>Melhor Média</h5>
             <h4>{quizMaiorMedia.nota} / 10</h4>
           </div>
-          
         </div>
       </div>
       <div className="dash-right">

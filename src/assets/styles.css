@@ -1089,7 +1089,7 @@ hr {
 }
 
 /* ===== Simulados ===== */
-.question-bloco {
+.pergunta-bloco {
   background-color: #f7f9fb;
   padding: 20px;
   margin: 10px;
@@ -1101,9 +1101,29 @@ hr {
 }
 
 .option-label {
-  margin: 10px 0px;
-  & label {
-    padding-left: 10px;
-    font-weight: 600;
-  }
+  padding-left: 10px;
+  font-weight: 600;
+}
+
+.botao-finalizar{
+  background-color: #136b4e;
+  color: #f7f9fb;
+  padding: 15px;
+}
+.box-finalizado{
+  background-color: #f7f9fb;
+  width: 50%;
+  padding: 30px;
+  border-radius: 20px;
+}
+.legenda-final{
+  padding: 20px;
+  margin-bottom: 10px;
+}
+.center-item{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
 }

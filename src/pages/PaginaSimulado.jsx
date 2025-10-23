@@ -1,56 +1,62 @@
 // Em /pages/PaginaSimulado.jsx
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-// 1. Importe seus componentes de layout
-import Header from "../components/Header"; // (Ajuste o caminho se necessário)
-import Footer from "../components/Footer"; // (Ajuste o caminho se necessário)
-import Dashboard from "../components/Dashboard";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 function PaginaSimulado() {
-  // --- TODA A LÓGICA QUE DEFINIMOS ANTES ---
-
-  const { quizId } = useParams();
   const userAtual = JSON.parse(sessionStorage.getItem("usuarioLogado"));
-  // Estados
+
+  // --- Estados do Componente ---
+  const { quizId } = useParams();
   const [perguntas, setPerguntas] = useState([]);
   const [tituloQuiz, setTituloQuiz] = useState("");
   const [respostasUsuario, setRespostasUsuario] = useState({});
   const [loading, setLoading] = useState(true);
   const [quizFinalizado, setQuizFinalizado] = useState(false);
   const [notaFinal, setNotaFinal] = useState(0);
-  const [acertos, setAcertos] = useState(0); // Adicionei para mostrar no final
+  const [acertos, setAcertos] = useState(0);
   const [erro, setErro] = useState(null);
 
-  // Efeito para Buscar os dados (Corrigido para sua estrutura)
+  const navigate = useNavigate();
+
+  // --- Efeito para Carregar o Quiz do localStorage (Versão Ideal) ---
   useEffect(() => {
     try {
       setLoading(true);
-      const chaveDoQuiz = `quiz_${quizId}`;
-      const dadosString = localStorage.getItem(chaveDoQuiz);
 
-      if (!dadosString) {
-        throw new Error(`Simulado com ID ${quizId} não encontrado.`);
+      // 1. Busca o banco MESTRE
+      const dbCardQuizString = localStorage.getItem("DbCardQuiz"); // <-- Lendo do banco NOVO
+      if (!dbCardQuizString) {
+        throw new Error("'DbCardQuiz' não encontrado no localStorage.");
       }
 
-      const dadosDoQuizArray = JSON.parse(dadosString);
+      // 2. Converte o array mestre
+      const dbCardQuizData = JSON.parse(dbCardQuizString);
 
-      if (!dadosDoQuizArray || dadosDoQuizArray.length === 0) {
-        throw new Error(`Dados do quiz ${quizId} estão vazios.`);
+      // 3. Acha o quiz específico DENTRO do mestre
+      const quizData = dbCardQuizData.find(
+        (quiz) => String(quiz.id) === String(quizId) // <-- Com a comparação correta
+      );
+
+      if (!quizData) {
+        throw new Error(`Quiz com ID ${quizId} não encontrado no DbCardQuiz.`);
       }
-      const quizData = dadosDoQuizArray[0];
 
+      // 4. Salva os dados desse quiz no estado
       setPerguntas(quizData.perguntas || []);
       setTituloQuiz(quizData.materia || `Simulado ${quizId}`);
     } catch (error) {
-      console.error("Erro ao carregar quiz do localStorage:", error);
+      console.error("Erro ao carregar o simulado do localStorage:", error);
       setErro(error.message);
     } finally {
       setLoading(false);
     }
   }, [quizId]);
 
-  // Lógica de Interação (Selecionar Resposta)
+  // --- Função para Salvar a Resposta do Usuário no Estado ---
   const handleSelecionarResposta = (
     idDaPerguntaTexto,
     respostaSelecionadaString
@@ -61,8 +67,9 @@ function PaginaSimulado() {
     }));
   };
 
-  // Lógica de Finalizar (Corrigida para sua estrutura)
+  /// --- O CÓDIGO PRINCIPAL QUE CALCULA E SALVA TUDO (CORRIGIDO) ---
   const finalizarQuiz = () => {
+    // ETAPA 1: CALCULAR A NOTA DESTE SIMULADO (Sem mudanças, está perfeito)
     let acertosContados = 0;
 
     perguntas.forEach((pergunta) => {
@@ -71,42 +78,110 @@ function PaginaSimulado() {
       const respostaDoUsuario = respostasUsuario[pergunta.texto];
 
       if (respostaCorretaString === respostaDoUsuario) {
-        acertosContados++; // Incrementa os acertos
+        acertosContados++;
       }
     });
 
-    const notaCalculada = (acertosContados / perguntas.length) * 10;
-    setNotaFinal(notaCalculada);
-    setAcertos(acertosContados); // Salva os acertos no estado
-    setQuizFinalizado(true); // Finaliza o quiz
+    const notaCalculada =
+      perguntas.length > 0 ? (acertosContados / perguntas.length) * 10 : 0; // Tenta salvar tudo no localStorage.
 
-    // Salvar o resultado no localStorage
     try {
-      const resultadosAntigosString =
-        localStorage.getItem("resultados_gerais") || "[]";
-      const resultadosAntigos = JSON.parse(resultadosAntigosString);
+      // ETAPA 2: ATUALIZAR O RECORDE PESSOAL DO ALUNO (UserQuiz)
 
-      const novoResultado = {
-        quizId: quizId,
-        materia: tituloQuiz,
+      const userQuizString = localStorage.getItem("UserQuiz");
+      if (!userQuizString) {
+        throw new Error("'UserQuiz' não encontrado no localStorage.");
+      }
+      const userQuizData = JSON.parse(userQuizString); // Pega o ARRAY de usuários // --- INÍCIO DA CORREÇÃO --- // Em vez de pegar o [0], usamos o 'userAtual' que você pegou do sessionStorage
+
+      // 1. Pega o ID do usuário que está logado na sessão
+      const userId = userAtual.id;
+
+      // 2. Acha o ÍNDICE (posição) desse usuário dentro do array 'UserQuiz'
+      const userIndex = userQuizData.findIndex(
+        (user) => String(user.id) === String(userId)
+      ); // 3. Verificação de segurança: se não achar o usuário, para a função
+
+      if (userIndex === -1) {
+        throw new Error(
+          `Usuário logado (ID: ${userId}) não foi encontrado no 'UserQuiz' do localStorage.`
+        );
+      } // O resto da sua lógica agora funciona, pois 'userIndex' está correto
+      // --- FIM DA CORREÇÃO ---
+
+      if (!userQuizData[userIndex].notas) {
+        userQuizData[userIndex].notas = {};
+      }
+
+      const notaAntiga = userQuizData[userIndex].notas[quizId] || 0;
+
+      if (notaCalculada > notaAntiga) {
+        userQuizData[userIndex].notas[quizId] = notaCalculada;
+        localStorage.setItem("UserQuiz", JSON.stringify(userQuizData));
+        console.log(
+          `[UserQuiz] Recorde pessoal atualizado para ${quizId}: ${notaCalculada.toFixed(
+            1
+          )}`
+        );
+      } // ETAPA 3: ATUALIZAR A NOTA GERAL DO QUIZ (dbCardQuiz)
+
+      // (Esta etapa já estava correta, pois ela só precisa do 'userId',
+      // que agora pegamos corretamente do 'userAtual')
+
+      const dbCardQuizString = localStorage.getItem("DbCardQuiz");
+      if (!dbCardQuizString) {
+        throw new Error("'dbCardQuiz' não encontrado no localStorage.");
+      }
+
+      const dbCardQuizData = JSON.parse(dbCardQuizString);
+
+      const quizIndex = dbCardQuizData.findIndex(
+        (quiz) => String(quiz.id) === String(quizId)
+      );
+
+      if (quizIndex === -1) {
+        throw new Error(`Quiz ${quizId} não encontrado no 'DbCardQuiz'.`);
+      }
+
+      if (!dbCardQuizData[quizIndex].notas) {
+        dbCardQuizData[quizIndex].notas = [];
+      } // Esta parte agora funciona, pois 'userId' está correto
+
+      dbCardQuizData[quizIndex].notas.push({
+        userId: userId, // userId pego do userAtual
         nota: notaCalculada,
-        acertos: acertosContados,
-        totalPerguntas: perguntas.length,
-        respostas: respostasUsuario,
         data: new Date().toISOString(),
-      };
+      }); // Recalcula a 'notaMedia'
 
-      const novosResultados = [...resultadosAntigos, novoResultado];
-      localStorage.setItem(
-        "resultados_gerais",
-        JSON.stringify(novosResultados)
+      const todasAsNotasDoQuiz = dbCardQuizData[quizIndex].notas.map(
+        (n) => n.nota
+      );
+      const somaDasNotas = todasAsNotasDoQuiz.reduce(
+        (acc, nota) => acc + nota,
+        0
+      );
+      const novaMedia = somaDasNotas / todasAsNotasDoQuiz.length;
+
+      dbCardQuizData[quizIndex].notaMedia = novaMedia;
+
+      localStorage.setItem("DbCardQuiz", JSON.stringify(dbCardQuizData));
+      console.log(
+        `[dbCardQuiz] Média geral do quiz ${quizId} atualizada para ${novaMedia.toFixed(
+          1
+        )}`
       );
     } catch (error) {
-      console.error("Erro ao salvar resultado no localStorage:", error);
-    }
+      console.error("Erro GERAL ao salvar resultados no localStorage:", error);
+      // BÔNUS: Mostre o erro na tela para o usuário (e para você)
+      setErro(error.message);
+    } // ETAPA 4: ATUALIZAR A TELA (UI) (Sem mudanças, está perfeito)
+
+    setNotaFinal(notaCalculada);
+    setAcertos(acertosContados);
+    setQuizFinalizado(true);
   };
 
-  // --- O NOVO RETURN COM SEU LAYOUT ---
+  // --- O RETURN (JSX) QUE MONTA A PÁGINA ---
 
   return (
     <div className="div-pai">
@@ -114,34 +189,47 @@ function PaginaSimulado() {
 
       <main className="main-content">
         <div className="container mg-sup">
-          {/* Aqui começa o conteúdo dinâmico.
-            Vamos renderizar condicionalmente (loading, erro, finalizado, ou o quiz)
-            DENTRO do seu container.
-          */}
-
+          {/* Renderização Condicional: Carregando */}
           {loading && <div>Carregando simulado...</div>}
 
+          {/* Renderização Condicional: Erro */}
           {erro && <div>Erro: {erro}</div>}
 
+          {/* Renderização Condicional: Quiz Finalizado */}
           {quizFinalizado && (
-            <div>
-              <h2>Simulado Finalizado!</h2>
-              <h3>{tituloQuiz}</h3>
-              <p>Sua nota foi: {notaFinal.toFixed(1)} de 10</p>
-              <p>
-                Você acertou {acertos} de {perguntas.length} perguntas.
-              </p>
-              <button>
-                {userAtual.isTeacher === false ? "Simulados" : "Dashboard"}
-              </button>
+            <div className="center-item">
+              <div className="box-finalizado ">
+                <h2>Simulado Finalizado!</h2>
+                <h3>
+                  {tituloQuiz} #{quizId}
+                </h3>
+                <div className="legenda-final">
+                  <p>
+                    {notaFinal > 8
+                      ? `PARABÉNS!!! Sua nota foi: ${notaFinal}`
+                      : `Sua nota foi: ${notaFinal}`}
+                  </p>
+                  <p>
+                    Você acertou {acertos} de {perguntas.length} perguntas.
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate("/Dashboard")}
+                  className="botao-finalizar"
+                >
+                  {userAtual.isTeacher === true
+                    ? "Voltar ao início"
+                    : "Voltar ao Dashboard"}
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Se não estiver carregando, nem com erro, nem finalizado, mostra o quiz */}
+          {/* Renderização Condicional: O Quiz (Formulário) */}
           {!loading && !erro && !quizFinalizado && (
             <>
               <h1 className="title-section">
-                Simulado de {tituloQuiz} #{quizId}
+                Simulado {tituloQuiz} #{quizId}
               </h1>
 
               <form
@@ -152,14 +240,14 @@ function PaginaSimulado() {
               >
                 {perguntas.length > 0 ? (
                   perguntas.map((pergunta, index) => (
-                    <div key={pergunta.texto} className="question-bloco">
-                      <h3 className="">
+                    <div key={pergunta.texto} className="pergunta-bloco">
+                      <h3>
                         {index + 1}. {pergunta.texto}
                       </h3>
 
                       <div className="opcoes-bloco">
                         {pergunta.opcoes.map((opcaoString, opcaoIndex) => (
-                          <div key={opcaoIndex} className="option-label">
+                          <div key={opcaoIndex}>
                             <input
                               type="radio"
                               name={pergunta.texto}
@@ -175,7 +263,9 @@ function PaginaSimulado() {
                               }
                               required
                             />
-                            <label>{opcaoString}</label>
+                            <label className="option-label">
+                              {opcaoString}
+                            </label>
                           </div>
                         ))}
                       </div>

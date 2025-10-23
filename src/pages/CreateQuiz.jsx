@@ -20,7 +20,6 @@ const CreateQuiz = () => {
     }
   }, [userAtual, navigate]);
 
-
   if (!userAtual) {
     return null;
   }
@@ -30,39 +29,50 @@ const CreateQuiz = () => {
     navigate("/");
   };
 
-  const dbUser = JSON.parse(localStorage.getItem("UserQuiz")) || [];
+  //const dbUser = JSON.parse(localStorage.getItem("UserQuiz")) || [];
 
   const onSubmit = (data) => {
+    // 1. Pega o banco mestre
     const dbAntigo = JSON.parse(localStorage.getItem("DbCardQuiz")) || [];
 
+    // 2. Lógica do ID
     let idUnico;
-
     if (dbAntigo.length === 0) {
-      idUnico = "0001";
+      idUnico = "1101"; // Começar de um ID base
     } else {
-      const maiorId = Math.max(...dbAntigo.map((quiz) => Number(quiz.id)));
+      // Garante que estamos pegando apenas IDs numéricos válidos
+      const idsNumericos = dbAntigo.map(quiz => Number(quiz.id)).filter(id => !isNaN(id));
+      const maiorId = Math.max(0, ...idsNumericos); // Usa 0 como base caso o array esteja vazio
       const proximoId = maiorId + 1;
-      idUnico = proximoId.toString().padStart(4, "0");
+      idUnico = proximoId.toString(); // Salvamos como string
     }
 
-    const novoCardQuiz = {
+    // 3. Criar o ÚNICO objeto de quiz, 100% completo
+    const novoQuizCompleto = {
       materia: data.materia,
       img: `${data.materia.toLowerCase()}.png`,
       id: idUnico,
       legenda: data.legenda,
-      link: `/quiz/${idUnico}`,
+      link: `/quiz/${idUnico}`, 
+      
+      // (ASSUMINDO que seus componentes <Questions> e <Gabarito> 
+      // já estão formatando 'data.perguntas' como um array de objetos)
+      perguntas: data.perguntas, 
+      
+      // === OS CAMPOS FALTANTES ===
+      notaMedia: 0, // Um quiz novo sempre começa com média 0
+      notas: []     // Um quiz novo sempre começa sem nenhuma nota
     };
 
-    const quizCompleto = {
-      ...novoCardQuiz,
-      professorId: data.professorId,
-      perguntas: data.perguntas,
-    };
-
-    const dbAtualizado = [novoCardQuiz, ...dbAntigo];
+    // 4. Adicionar o novo quiz COMPLETO ao array mestre
+    // (Adicionando no começo, como você fez)
+    const dbAtualizado = [novoQuizCompleto, ...dbAntigo];
+    
+    // 5. Salvar APENAS o 'DbCardQuiz'
     localStorage.setItem("DbCardQuiz", JSON.stringify(dbAtualizado));
 
-    localStorage.setItem(`quiz_${idUnico}`, JSON.stringify(quizCompleto));
+    // 6. REMOVER a linha que salva a cópia duplicada
+    // localStorage.setItem(`quiz_${idUnico}`, JSON.stringify(quizCompleto)); // <-- LINHA REMOVIDA
 
     alert("Simulado criado com sucesso!");
     navigate("/Dashboard");
@@ -70,12 +80,11 @@ const CreateQuiz = () => {
 
   return (
     <div className="div-pai">
-      <Header userAtual={userAtual} logout={handleLogout}/>
+      <Header userAtual={userAtual} logout={handleLogout} />
 
       <main className="main-content container mg-sup">
         <h1 className="title-section">Novo Simulado</h1>
         <form className="create-painel" onSubmit={handleSubmit(onSubmit)}>
-          
           <div className="select-class">
             <div className="option-class">
               <h1 className="title-sections">Matéria</h1>
@@ -91,12 +100,6 @@ const CreateQuiz = () => {
                 <option value="Inglês">Inglês</option>
                 <option value="Filosofia">Filosofia</option>
                 <option value="Sociologia">Sociologia</option>
-              </select>
-            </div>
-            <div className="option-teacher">
-              <h1 className="title-questions">Professor</h1>
-              <select className="select-opt" {...register("professorId")}>
-                <OptionsProf db={dbUser} />
               </select>
             </div>
           </div>
